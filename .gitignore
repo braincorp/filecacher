@@ -1,5 +1,6 @@
 .env
 *.py[cod]
+*.tar.gz
 
 # C extensions
 *.so
