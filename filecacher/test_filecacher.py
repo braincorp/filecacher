@@ -20,6 +20,7 @@
 
 from filecache import FileCache
 import pytest
+import tempfile
 
 
 @pytest.fixture
@@ -42,8 +43,9 @@ def test_missing_key(filecache):
 
 
 def _create_file(tmpdir, length):
-	file = tmpdir.tempfile().open()
+	file = tempfile.NamedTemporaryFile(dir = str(tmpdir), delete = False)
 	file.write('a'*length)
+	return file.name
 
 
 def test_remove_old_files(tmpdir):
