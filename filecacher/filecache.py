@@ -38,7 +38,9 @@ class FileCache(object):
 		self._init_cache()
 
 	def _init_cache(self):
-		os.makedirs(self._cache_folder)
+		if not os.path.exists(self._cache_folder):
+			os.makedirs(self._cache_folder)
+		assert os.path.isdir(self._cache_folder)
 
 	def _key_path(self, key):
 		"""Key path from key."""
@@ -49,6 +51,8 @@ class FileCache(object):
 		key_path = self._key_path(key)
 		if os.path.exists(key_path):
 			return key_path
+		else:
+			raise KeyError(key + ' not in cache')
 
 	def __setitem__(self, key, filename):
 		"""Insert filename into the dictionary under the keyname."""

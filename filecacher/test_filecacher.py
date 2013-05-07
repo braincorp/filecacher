@@ -17,3 +17,25 @@
 #
 #  This notice shall supercede any other notices contained within the software.
 # =============================================================================
+
+from filecache import FileCache
+import pytest
+
+
+@pytest.fixture
+def filecache(tmpdir):
+	"""Create an empty file cache as helper for some tests."""
+	return FileCache(str(tmpdir.mkdir('filecache')))
+
+
+def test_get_set(filecache, tmpdir):
+	bar_path = tmpdir.join('bar')
+	bar_path.write('hello')
+	filecache['foo'] = str(bar_path)
+
+	assert open(filecache['foo']).read() == 'hello'
+
+
+def test_missing_key(filecache):
+	with pytest.raises(KeyError):
+		filecache['missing_key']

@@ -1,6 +1,9 @@
 .env
 *.py[cod]
 *.tar.gz
+.pytest_tmp
+
+.cache
 
 # C extensions
 *.so
