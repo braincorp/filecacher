@@ -21,6 +21,7 @@
 from filecache import FileCache
 import pytest
 import tempfile
+import time
 
 
 @pytest.fixture
@@ -51,9 +52,13 @@ def _create_file(tmpdir, length):
 def test_remove_old_files(tmpdir):
 	fc = filecache(tmpdir, cache_size=128)
 	fc['a'] = _create_file(tmpdir, 32)
+	time.sleep(2)
 	fc['b'] = _create_file(tmpdir, 64)
+	time.sleep(2)
 	fc['a']  # Force a get to preserve a
+	time.sleep(2)
 	fc['c'] = _create_file(tmpdir, 48)
+	time.sleep(2)
 	fc['a']  # Force a get to preserve a
 	fc['d'] = _create_file(tmpdir, 48)
 

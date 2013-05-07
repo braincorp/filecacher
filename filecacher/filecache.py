@@ -79,6 +79,7 @@ class FileCache(object):
 		# add path to each file
 		files = [os.path.join(self._cache_folder, f) for f in files]
 		files.sort(key=lambda x: os.path.getmtime(x))
+
 		for f in files:
 			f_size = os.stat(f).st_size
 			self._cache_size -= f_size
