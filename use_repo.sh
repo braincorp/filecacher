@@ -16,7 +16,7 @@ else
 			--distribute
 fi
 
-source .env/bin/active
+source .env/bin/activate
 
 # readline must be come before everything else
 if [[ `uname` == 'Darwin' ]]; then
