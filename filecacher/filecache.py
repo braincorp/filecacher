@@ -50,6 +50,8 @@ class FileCache(object):
 		"""Lookup item and return the full path to the file."""
 		key_path = self._key_path(key)
 		if os.path.exists(key_path):
+			# Update the access time
+			os.utime(key_path, None)
 			return key_path
 		else:
 			raise KeyError(key + ' not in cache')

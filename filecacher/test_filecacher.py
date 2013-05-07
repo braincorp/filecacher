@@ -23,9 +23,9 @@ import pytest
 
 
 @pytest.fixture
-def filecache(tmpdir):
+def filecache(tmpdir, **optional_args):
 	"""Create an empty file cache as helper for some tests."""
-	return FileCache(str(tmpdir.mkdir('filecache')))
+	return FileCache(str(tmpdir.mkdir('filecache')), **optional_args)
 
 
 def test_get_set(filecache, tmpdir):
@@ -39,3 +39,25 @@ def test_get_set(filecache, tmpdir):
 def test_missing_key(filecache):
 	with pytest.raises(KeyError):
 		filecache['missing_key']
+
+
+def _create_file(tmpdir, length):
+	file = tmpdir.tempfile().open()
+	file.write('a'*length)
+
+
+def test_remove_old_files(tmpdir):
+	fc = filecache(tmpdir, cache_size=128)
+	fc['a'] = _create_file(tmpdir, 32)
+	fc['b'] = _create_file(tmpdir, 64)
+	fc['a']  # Force a get to preserve a
+	fc['c'] = _create_file(tmpdir, 48)
+	fc['a']  # Force a get to preserve a
+	fc['d'] = _create_file(tmpdir, 48)
+
+	fc['a']
+	fc['d']
+
+	with pytest.raises(KeyError):
+		# 'b' should have been flushed out by now
+		fc['b']
