@@ -20,6 +20,7 @@
 
 import os
 import shutil
+import logging
 
 
 class FileCache(object):
@@ -27,13 +28,15 @@ class FileCache(object):
 		"""Create a file cache, utilizing cache_folder to store the cached files
 		and utilizing a maximum of cache_size.
 
-		Note the actual cache size may increase by +/- 10% of the specified
-		cache size.
-
 		Keys must be strings which do not contain slashes and are valid filenames.
+
+		Maximum size is a soft limit - it is tracked per process - so if multiple
+		processes are writing to the cache it may go oversize.
 		"""
+		self._logger = logging.getLogger(__name__)
+
 		self._cache_folder = os.path.abspath(cache_folder)
-		self._cache_size = cache_size
+		self._maximum_cache_size = cache_size
 
 		self._init_cache()
 
@@ -41,6 +44,16 @@ class FileCache(object):
 		if not os.path.exists(self._cache_folder):
 			os.makedirs(self._cache_folder)
 		assert os.path.isdir(self._cache_folder)
+		self._calculate_cache_size()
+
+	def _calculate_cache_size(self):
+		files = os.listdir(self._cache_folder)
+		self._cache_size = 0
+		for f in files:
+			self._cache_size += os.stat(os.path.join(self._cache_folder, f)).st_size
+		self._logger.info('Initial cache size in %s is %d' % (self._cache_folder,
+													self._cache_size))
+		self._trim_cache()
 
 	def _key_path(self, key):
 		"""Key path from key."""
@@ -56,6 +69,26 @@ class FileCache(object):
 		else:
 			raise KeyError(key + ' not in cache')
 
+	def _trim_cache(self):
+		"""Check if the cache is oversized - if it is trim it."""
+		if self._cache_size <= self._maximum_cache_size:
+			return
+		oversize = self._cache_size - self._maximum_cache_size
+		logging.info('Cache oversize by %d' % oversize)
+		files = os.listdir(self._cache_folder)
+		# add path to each file
+		files = [os.path.join(self._cache_folder, f) for f in files]
+		files.sort(key=lambda x: os.path.getmtime(x))
+		for f in files:
+			f_size = os.stat(f).st_size
+			self._cache_size -= f_size
+			self._logger.info('Removing %s with size %d to make room' % (f, f_size))
+			os.remove(f)
+			if self._cache_size < 0.9*self._maximum_cache_size:
+				return
+
 	def __setitem__(self, key, filename):
 		"""Insert filename into the dictionary under the keyname."""
+		self._trim_cache()
 		shutil.copyfile(filename, self._key_path(key))
+		self._cache_size += os.stat(self._key_path(key)).st_size
