@@ -26,5 +26,4 @@ setup(name='filecacher',
     author_email='hunt@braincorporation.com',
     url='https://github.com/braincorp/filecacher',
     version=filecacher.__version__,
-    packages=['filecacher']
-    )
+    packages=['filecacher'])
