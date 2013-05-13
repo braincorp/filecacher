@@ -18,6 +18,13 @@
 #  This notice shall supercede any other notices contained within the software.
 # =============================================================================
 
-__version__ = '0.1'
+from distutils.core import setup
+import filecacher
 
-from filecache import FileCache
+setup(name='filecacher',
+    author='Brain Corporation',
+    author_email='hunt@braincorporation.com',
+    url='https://github.com/braincorp/filecacher',
+    version=filecacher.__version__,
+    packages=['filecacher']
+    )
