@@ -1,0 +1,3 @@
+#!/bin/sh
+py.test --junitxml=testresults.xml --cov filecacher --cov-report xml
+
