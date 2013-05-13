@@ -24,12 +24,12 @@ if [[ `uname` == 'Darwin' ]]; then
 fi
 pip install -r dev-requirements.txt
 
-if [ -e pytest-xdist-2013-bc-a.tar.gz ]; then
+if [ -e pytest-xdist-2013-bc-b.tar.gz ]; then
 	true
 else
 	echo 'Installing xdist'
-	wget http://thirdparty-packages.braincorporation.net/pytest-xdist-2013-bc-a.tar.gz
-	pip install pytest-xdist-2013-bc-a.tar.gz
+	wget http://thirdparty-packages.braincorporation.net/pytest-xdist-2013-bc-b.tar.gz
+	pip install pytest-xdist-2013-bc-b.tar.gz
 fi
 
 echo Ready to work!
