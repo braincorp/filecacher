@@ -1,0 +1,9 @@
+language: python
+python:
+  - "2.7"
+notifications:
+  - email: false
+install:
+  - pip install -r dev-requirements.txt
+  - pip install http://thirdparty-packages.braincorporation.net/pytest-xdist-2013-bc-b.tar.gz
+script: py.test -n 4
